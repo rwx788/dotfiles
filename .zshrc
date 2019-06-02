@@ -1,58 +1,62 @@
-# Themes.
-ZSH_THEME="oxide"
+## Options section
+setopt extendedglob                                             # Extended globbing. Allows using regular expressions with *
+setopt nocaseglob                                               # Case insensitive globbing
+setopt rcexpandparam                                            # Array expension with parameters
+setopt nocheckjobs                                              # Don't warn about running processes when exiting
+setopt numericglobsort                                          # Sort filenames numerically when it makes sense
+setopt nobeep                                                   # No beep
+setopt appendhistory                                            # Immediately append history instead of overwriting
+setopt histignorealldups                                        # If a new command is a duplicate, remove the older one
+setopt autocd                                                   # if only directory path is entered, cd there.
 
-# Case-sensitive completion.
-CASE_SENSITIVE="true"
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'       # Case insensitive tab completion
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"         # Colored completion (different colors for dirs/files/etc)
+zstyle ':completion:*' rehash true                              # automatically find new executables in path 
+HISTFILE=~/.zhistory
+HISTSIZE=1000
+SAVEHIST=500
+export EDITOR=/usr/bin/nano
+export VISUAL=/usr/bin/nano
+WORDCHARS=${WORDCHARS//\/[&.;]}                                 # Don't consider certain characters part of the word
 
-# Disable bi-weekly auto-update checks.
-DISABLE_AUTO_UPDATE="true"
+alias cp="cp -i"
+## Keybindings section
+bindkey -e
+bindkey '^[[7~' beginning-of-line                               # Home key
+bindkey '^[[8~' end-of-line                                     # End key
+bindkey '^[[2~' overwrite-mode                                  # Insert key
+bindkey '^[[3~' delete-char                                     # Delete key
+bindkey '^[[C'  forward-char                                    # Right key
+bindkey '^[[D'  backward-char                                   # Left key
+bindkey '^[[5~' history-beginning-search-backward               # Page up key
+bindkey '^[[6~' history-beginning-search-forward                # Page down key
+bindkey '^[[A'  up-line-or-history                  # Up key
+bindkey '^[[B'  down-line-or-history                # Down key
+# Navigate words with ctrl+arrow keys
+bindkey '^[Oc' forward-word                                     #
+bindkey '^[Od' backward-word                                    #
+bindkey '^[[1;5D' backward-word                                 #
+bindkey '^[[1;5C' forward-word                                  #
+bindkey '^H' backward-kill-word                                 # delete previous word with ctrl+backspace
+bindkey '^[[Z' undo                                             # Shift+tab undo last action
 
-# Disable auto-setting terminal title.
-DISABLE_AUTO_TITLE="true"
+## Theming section  
+autoload -U compinit colors zcalc
+compinit
+colors
 
-# Disable marking untracked files under VCS as dirty.
-DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# History.
-HIST_STAMPS="yyyy-mm-dd"
-
-# Plugins.
-plugins=(
-    archive
-    extract
-    git
-    ubuntu
-)
-
-# Environment variables.
-source ~/.exports
-
-# Oh My Zsh time!
-source "$ZSH"/oh-my-zsh.sh
-
-# User config.
-source ~/.zsh/setopt.zsh
-
-# Aliases.
-source ~/.aliases
-source ~/.aliases_private
-
-# Functions.
-source ~/.functions
-source ~/.functions_private
-
-# Tracks your most used directories, based on frecency with z.
-source ~/.zsh/plugins/z/z.sh
-
-# Manage SSH with Keychain.
-if [ -x "$(command -v keychain)" ]; then
-    eval "$(keychain --eval --quiet id_rsa_github id_rsa_gitlab)"
-fi
-
-# Base16 Shell.
-[ -n "$PS1" ] && [ -s "$BASE16_SHELL/profile_helper.sh" ] && eval "$("$BASE16_SHELL/profile_helper.sh")"
-
-# Start tmux.
-if [[ -x "$(command -v tmux)" && "$(ps -o 'cmd=' -p $(ps -o 'ppid=' -p $$))" = "alacritty" ]]; then
-    [ -z "$TMUX" ] && { tmux attach-session || exec tmux && exit; }
-fi
+# enable substitution for prompt
+setopt prompt_subst
+# bash style prompt 
+PROMPT="[%n@%m %1~]# %{$reset_color%"
+# Right prompt with exit status of previous command if not successful
+ RPROMPT="%{$fg[red]%} %(?..[%?])" 
+# Color man pages
+export LESS_TERMCAP_mb=$'\E[01;32m'
+export LESS_TERMCAP_md=$'\E[01;32m'
+export LESS_TERMCAP_me=$'\E[0m'
+export LESS_TERMCAP_se=$'\E[0m'
+export LESS_TERMCAP_so=$'\E[01;47;34m'
+export LESS_TERMCAP_ue=$'\E[0m'
+export LESS_TERMCAP_us=$'\E[01;36m'
+export LESS=-r
